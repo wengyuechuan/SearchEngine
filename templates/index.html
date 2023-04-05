@@ -1,0 +1,154 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>搜索页面</title>
+    <style>
+      /* CSS样式 */
+      /* 搜索框 */
+      .search-box {
+        width: 500px;
+        height: 40px;
+        border: 1px solid #ccc;
+        border-radius: 20px;
+        padding: 0 20px;
+        display: flex;
+        align-items: center;
+        margin: 50px auto;
+      }
+      .search-box input {
+        flex: 1;
+        height: 100%;
+        border: none;
+        outline: none;
+        font-size: 16px;
+      }
+      .search-box button {
+        width: 80px;
+        height: 100%;
+        border: none;
+        background-color: #3385ff;
+        color: #fff;
+        font-size: 16px;
+        border-radius: 20px;
+        margin-left: 10px;
+        cursor: pointer;
+      }
+      /* 搜索结果 */
+      .search-result {
+        width: 500px;
+        margin: 0 auto;
+        margin-top: 20px;
+      }
+      .search-result ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .search-result li {
+        margin-top: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+      .search-result li a {
+        color: #333;
+        text-decoration: none;
+        font-size: 16px;
+      }
+      .search-result li a:hover {
+        color: #3385ff;
+      }
+      #logo{
+        width:100px;
+        display: block;
+        margin: 0 auto;
+          margin-bottom:-40px;
+    }
+      .title{
+          font-size: 16px;
+          font-weight: bold;
+          display: block;
+      }
+      .author{
+            // 第二行靠左
+            text-align: left;
+            font-size: 5px;
+            // 字体颜色为灰色
+            color: #999;
+          display: block;
+      }
+      .abstract{
+            // 第二行靠左
+            text-align: left;
+            font-size: 8px;
+            // 字体颜色为灰色
+            color: #999;
+          display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 搜索框 -->
+        <img src="{{url_for('static',filename='logo.png')}}" alt="logo" id="logo">
+    <div class="search-box">
+      <input type="text" placeholder="请输入搜索内容">
+      <button>搜索</button>
+    </div>
+    <!-- 搜索结果 -->
+    <div class="search-result">
+    </div>
+    </body>
+    <script>
+      // 获取搜索框
+      var searchBox = document.querySelector('.search-box');
+      // 获取搜索按钮
+      var searchBtn = searchBox.querySelector('button');
+      // 获取搜索结果
+      var searchResult = document.querySelector('.search-result');
+      // 获取搜索框中的输入框
+      var searchInput = searchBox.querySelector('input');
+      // 给搜索按钮添加点击事件
+      searchBtn.onclick = function () {
+        // 获取输入框中的内容
+        var searchValue = searchInput.value;
+        // 判断输入框中是否有内容
+        if (searchValue) {
+          // 有内容，发送请求
+          // 创建xhr对象
+          var xhr = new XMLHttpRequest();
+          // 打开请求
+          xhr.open('GET', 'http://localhost:5000/search?query=' + searchValue);
+          // 发送请求
+          xhr.send();
+          // 监听请求状态
+          xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+              // 请求成功
+              // 获取响应数据
+              var data = JSON.parse(xhr.responseText);
+              // 判断是否有数据
+              if (data.msg.length > 0) {
+                var str = '';
+                // 遍历数据
+                data.msg.forEach(function (item) {
+                  str += '<li><a class="result-box" href="'+ item.url + '">'+ '<span class="title">'+ item.title +'</span>'+
+                      '<span class="author">' + "作者："+item.authors + '</span>'+
+                      '<span class="abstract">'+item.abstract+'</span>'+'</a></li>';
+                });
+                // 将拼接好的字符串添加到页面中
+                searchResult.innerHTML = '<ul>' + str + '</ul>';
+              } else {
+                // 没有数据
+                searchResult.innerHTML = '没有搜索到相关数据';
+              }
+            }
+          }
+        } else {
+          // 没有内容，提示用户
+          alert('请输入搜索内容');
+        }
+      }
+    </script>
+</html>
